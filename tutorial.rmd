@@ -1,0 +1,22 @@
+install.packages("sparklyr")
+library(sparklyr)
+
+#Installing Apache Spark on a local Machine
+spark_install()
+
+# Load the sparklyr package with library().
+# Connect to Spark by calling spark_connect(), with argument master = "local". 
+#Assign the result to spark_conn.
+# Get the Spark version using spark_version(), with argument sc = spark_conn.
+# Disconnect from Spark using spark_disconnect(), with argument sc = spark_conn.
+
+
+# Load sparklyr
+library(sparklyr)
+# Connect to your Spark cluster
+spark_conn <- spark_connect(master="local")
+
+# Print the version of Spark
+spark_version(sc=spark_conn)
+# Disconnect from Spark
+spark_disconnect(sc=spark_conn)
