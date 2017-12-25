@@ -1,2 +1,2 @@
-# Apache_Spark_in_R_-SparklyR-
+# Introduction to Apache Spark in R: SparklyR
 Managing Big Data in R
