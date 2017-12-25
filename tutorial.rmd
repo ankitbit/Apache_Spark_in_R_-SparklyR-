@@ -4,13 +4,13 @@ library(sparklyr)
 #Installing Apache Spark on a local Machine
 spark_install()
 
-# Load the sparklyr package with library().
-# Connect to Spark by calling spark_connect(), with argument master = "local". 
-#Assign the result to spark_conn.
-# Get the Spark version using spark_version(), with argument sc = spark_conn.
-# Disconnect from Spark using spark_disconnect(), with argument sc = spark_conn.
+Load the sparklyr package with library().
+Connect to Spark by calling spark_connect(), with argument master = "local". 
+Assign the result to spark_conn.
+Get the Spark version using spark_version(), with argument sc = spark_conn.
+Disconnect from Spark using spark_disconnect(), with argument sc = spark_conn.
 
-
+```{r loading_connecting_disconnecting}
 # Load sparklyr
 library(sparklyr)
 # Connect to your Spark cluster
@@ -20,3 +20,58 @@ spark_conn <- spark_connect(master="local")
 spark_version(sc=spark_conn)
 # Disconnect from Spark
 spark_disconnect(sc=spark_conn)
+```
+
+```{r}
+# Load dplyr
+library(dplyr)
+
+# Explore track_metadata structure
+str(track_metadata)
+dim(track_metadata)
+# Connect to your Spark cluster
+spark_conn <- spark_connect("local")
+
+# Copy track_metadata to Spark
+track_metadata_tbl <- copy_to(spark_conn, track_metadata, overwrite=TRUE)
+
+# List the data frames available in Spark
+src_tbls(spark_conn)
+
+# Disconnect from Spark
+spark_disconnect(spark_conn)
+```
+
+
+```{r }
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+# Manipulate the track metadata
+  # Select columns
+  track_metadata_tbl %>%select(artist_name, release, title, year)
+
+# Try to select columns using [ ]
+tryCatch({
+    # Selection code here
+    track_metadata_tbl[,c("artist_name", "release", "title", "year")]
+  },
+  error = print
+)
+```
+
+
+```{r}
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+# Manipulate the track metadata
+track_metadata_tbl %>%
+  # Select columns
+  select(artist_name, release, title, year)%>%
+  # Filter rows
+  filter(year>=1960,year<1970) %>%
+  # Arrange rows
+  arrange(artist_name,desc(year), title)
+```
+
