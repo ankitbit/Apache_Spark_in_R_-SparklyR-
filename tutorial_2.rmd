@@ -26,3 +26,21 @@ track_metadata_tbl %>%
   select(matches("ti.?t"))
 ```
 
+**NOTE:** **copy_to( ) moves your data from R to Spark; collect( ) goes in the opposite direction**
+```{r}
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+results <- track_metadata_tbl %>%
+  # Filter where artist familiarity is greater than 0.9
+  filter(artist_familiarity>0.9)
+
+# Examine the class of the results
+class(results)
+
+# Collect your results
+collected <- results %>%collect()
+
+# Examine the class of the collected results
+class(collected)
+```
