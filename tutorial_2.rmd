@@ -44,3 +44,50 @@ collected <- results %>%collect()
 # Examine the class of the collected results
 class(collected)
 ```
+#### Storing intermediate results
+As you saw in Chapter 1, copying data between R and Spark is a fundamentally slow task. That means that collecting the data, as you saw in the previous exercise, should only be done when you really need to.
+
+The pipe operator is really nice for chaining together data manipulation commands, but in general, you can't do a whole analysis with everything chained together. For example, this is an awful practice, since you will never be able to debug your code.
+```{r}
+final_results <- starting_data %>%
+  # 743 steps piped together
+  # ... %>%
+  collect()
+```
+That gives a dilemma. You need to store the results of intermediate calculations, but you don't want to collect them because it is slow. The solution is to use compute() to compute the calculation, but store the results in a temporary data frame on Spark. Compute takes two arguments: a tibble, and a variable name for the Spark data frame that will store the results.
+```{r}
+a_tibble %>%
+  # some calculations %>%
+  compute("intermediate_results")
+```
+
+A Spark connection has been created for you as spark_conn. A tibble attached to the track metadata stored in Spark has been pre-defined as track_metadata_tbl.
+
+Filter the rows of track_metadata_tbl where artist_familiarity is greater than 0.8.
+Compute the results using compute().
+Store the results in a Spark data frame named "familiar_artists".
+Assign the result to an R tibble named computed.
+See the available Spark datasets using src_tbls().
+Print the class() of computed. Notice that unlike collect(), compute() returns a remote tibble. The data is still stored in the Spark cluster.
+
+```{r}
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+computed <- track_metadata_tbl %>%
+  # Filter where artist familiarity is greater than 0.8
+  filter(artist_familiarity > 0.8) %>%
+  # Compute the results
+  compute("familiar_artists")
+
+# See the available datasets
+# pass the spark connection name as the argument to src_tbls()
+src_tbls(spark_conn) 
+
+# Examine the class of the computed results
+class(computed)
+```
+**NOTE: class(computed) is tbl_lazy. compute() lets you store intermediate results, without having to copy data to R.**
+
+
+
