@@ -89,5 +89,42 @@ class(computed)
 ```
 **NOTE: class(computed) is tbl_lazy. compute() lets you store intermediate results, without having to copy data to R.**
 
+#### Groups: great for music, great for data
+A common analysis problem is how to calculate summary statistics for each group of data. 
+For example, you might want to know your sales revenues by month, or by region. 
+In R, the process of splitting up your data into groups, applying a summary statistic on each group, 
+and combining the results into a single data structure, is known as "**split-apply-combine**". 
+The concept is much older though: SQL has had the GROUP BY statement for decades. 
+The term "**map-reduce**" is a similar concept, where "**map**" is very roughly analogous to the "**split**" 
+and "apply" steps, and "reducing" is "combining". The dplyr/sparklyr approach is to use group_by() 
+before you mutate() or summarize(). It takes the unquoted names of columns to group by. 
+For example, to calculate the mean of column x, for each combination of values in columns grp1 and 
+grp2, you would write the following.
 
+```{r}
+a_tibble %>%
+  group_by(grp1, grp2) %>%
+  summarize(mean_x = mean(x))
+```
+**Note that the columns passed to group_by() should typically be categorical variables.** 
 
+For example, if you wanted to calculate the average weight of people relative to their height, it doesn't make sense to group by height, since everyone's height is unique. You could, however, use **cut()** to convert the heights into different categories, and calculate the mean weight for each category.
+```{r}
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+duration_by_artist <- track_metadata_tbl %>%
+  # Group by artist
+  group_by(artist_name) %>%
+  # Calc mean duration
+  summarise(mean_duration=mean(duration)
+
+duration_by_artist %>%
+  # Sort by ascending mean duration
+  arrange(mean_duration)
+
+duration_by_artist %>%
+  # Sort by descending mean duration
+  arrange(desc(mean_duration)
+```
+**NOTE: summarize( ) works with grouped tibbles, and as you'll see next, so does mutate( )**
